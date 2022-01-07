@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/miniprojekt.dir/main.cpp.o CMakeFiles/miniprojekt.dir/CMax3SatProblem.cpp.o CMakeFiles/miniprojekt.dir/CGAIndividual.cpp.o CMakeFiles/miniprojekt.dir/CGAOptimizer.cpp.o -o miniprojekt 
