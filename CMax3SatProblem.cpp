@@ -25,28 +25,8 @@ string CMax3SatProblem::load(string fileName) {
     //std::cout << fileContent;
     return fileContent;
 }
-/*
 
-vector<bool> createRandomSolution() {
-    vector<bool> solution;
-    bool rng;
-    std::random_device rd; // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
-    std::uniform_int_distribution<> distr(0, 1); // define the range
-
-    for (int i = 0; i < 99; ++i) {
-        rng = distr(gen);
-        solution.push_back(rng);
-    }
-    for (int i = 0; i < 99; ++i) {
-        cout << solution.at(i);
-    }
-    return solution;
-}
-
-*/
-//vector<bool> solution
-int CMax3SatProblem::calculateQuality(CGAIndividual dude, int columns) {
+int CMax3SatProblem::calculateQuality(CGAIndividual dude, int columns, int fileValue) {
 
     std::stringstream stringStream(fileContent);
     string to;
@@ -69,17 +49,32 @@ int CMax3SatProblem::calculateQuality(CGAIndividual dude, int columns) {
             }
         }
     }
+
     int quality = 0;
+    cout << "   ";
     for (int i = 0; i < columns; ++i) {
         for (int j = 0; j < 3; ++j) {
             int tempSol = stoi(twoDthings[j][i]);
-            if (dude.solution.at(tempSol + 49) == 1) {
+            if (twoDthings[j][i] == "0") {
+                if (dude.solution.at(fileValue)) {
+                    quality++;
+                    j = 3;
+                }
+            }else if (tempSol > 0) {
+                if (dude.solution.at(tempSol + fileValue)){
+                    quality++;
+                    j = 3;
+                }
+            }else if ((tempSol < fileValue) && dude.solution.at(tempSol + fileValue - 1)) {
                 quality++;
                 j = 3;
             }
         }
     }
-    cout << "\nquality: " << quality;
+    cout << "\nquality: " << quality << " " ;
+    for (int i = 0; i < dude.solution.size(); ++i) {
+        cout << dude.solution.at(i);
+    }
     dude.fitnes = quality;
     twoDimensionalTableDealocate(twoDthings, 3, columns);
 

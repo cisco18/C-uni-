@@ -25,17 +25,23 @@ public:
 
     void assignSpecies(initializer_list<CGAIndividual>);
 
-    void runIteration();
+    void runIteration(int fileValue);
 
     void addASpeciman(CGAIndividual);
 
-    void createSpecies(int numberOfSpecies);
+    void createSpecies(int numberOfSpecies, int fileValue);
 
-    void runInstance(string filename, int columns);
+    void runInstance(string filename, int columns, int fileValue);
 
     void printPopulation();
+
+    void runIterationMultiple(int fileValue, int quantity);
+
+
+    int findHighestSolution();
+
 private:
-    CGAIndividual chooseParent();
+    CGAIndividual chooseParent(int fileValue);
 
 
 };

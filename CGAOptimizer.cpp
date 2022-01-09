@@ -24,34 +24,42 @@ void CGAOptimizer::addASpeciman(CGAIndividual speciman) {
     this->species.push_back(speciman);
 }
 
-vector<bool> createRandomSolution() {
+vector<bool> createRandomSolution(int numberOfSolutions) {
     vector<bool> solution;
     bool rng;
     std::random_device rd; // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
     std::uniform_int_distribution<> distr(0, 1); // define the range
 
-    for (int i = 0; i < 99; ++i) {
+    for (int i = 0; i < numberOfSolutions; ++i) {
         rng = distr(gen);
         solution.push_back(rng);
     }
+    for (int i = 0; i < numberOfSolutions ; ++i) {
+        solution.push_back(0);
+        solution.at(numberOfSolutions+i) = !solution.at(numberOfSolutions-i-1);
+    }
+    for (int i = 0; i < solution.size(); ++i) {
+        //cout<< solution.at(i);
+    }
+   // cout << "       ";
     return solution;
 }
 
 
-void CGAOptimizer::runInstance(string filename, int columns) {
+void CGAOptimizer::runInstance(string filename, int columns, int fileValue) {
     CMax3SatProblem cMax3SatProblem(filename);
     this->columns = columns;
     this->filename = filename;
-    createSpecies(population);
+    createSpecies(population, fileValue);
     for (int i = 0; i < population; ++i) {
-        species.at(i).fitnes = cMax3SatProblem.calculateQuality(species.at(i), columns);
+        species.at(i).fitnes = cMax3SatProblem.calculateQuality(species.at(i), columns, fileValue);
     }
 }
 
-void CGAOptimizer::createSpecies(int numberOfSpecies) {
+void CGAOptimizer::createSpecies(int numberOfSpecies, int fileValue) {
     for (int i = 0; i < numberOfSpecies; ++i) {
-        CGAIndividual speciman(createRandomSolution());
+        CGAIndividual speciman(createRandomSolution(fileValue));
         this->species.push_back(speciman);
 
     }
@@ -60,14 +68,13 @@ void CGAOptimizer::createSpecies(int numberOfSpecies) {
 }
 
 
-
-CGAIndividual CGAOptimizer::chooseParent() {
-    CGAIndividual parent1;
-    CGAIndividual parent2;
+CGAIndividual CGAOptimizer::chooseParent(int fileValue) {
+    CGAIndividual parent1(fileValue);
+    CGAIndividual parent2(fileValue);
     bool rng;
     std::random_device rd; // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
-    std::uniform_int_distribution<> distr(0, species.size()-1); // define the range
+    std::uniform_int_distribution<> distr(0, species.size() - 1); // define the range
     parent1 = species.at(distr(gen));
     parent2 = species.at(distr(gen));
     if (parent1.fitnes >= parent2.fitnes) {
@@ -77,23 +84,23 @@ CGAIndividual CGAOptimizer::chooseParent() {
 
 }
 
-void CGAOptimizer::runIteration() {
+void CGAOptimizer::runIteration(int fileValue) {
     std::random_device rd; // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
     std::uniform_int_distribution<> distr(0, 100);
     vector<CGAIndividual> newPopulation;
     while (newPopulation.size() < species.size()) {
-        CGAIndividual parent1 = chooseParent();
-        CGAIndividual parent2 = chooseParent();
-        CGAIndividual child1(parent1, parent2);
-        CGAIndividual child2(parent1, parent2);
+        CGAIndividual parent1 = chooseParent(fileValue);
+        CGAIndividual parent2 = chooseParent(fileValue);
+        CGAIndividual child1(parent1, parent2, fileValue, chanceOfCrossover);
+        CGAIndividual child2(parent1, parent2, fileValue, chanceOfCrossover);
         int rng = distr(gen);
-        if (chanceOfMutation<rng){
-            child1.mutate();
+        if (chanceOfMutation < rng) {
+            child1.mutate(fileValue);
         }
         rng = distr(gen);
-        if (chanceOfMutation<rng){
-            child2.mutate();
+        if (chanceOfMutation < rng) {
+            child2.mutate(fileValue);
         }
         newPopulation.push_back(child1);
         newPopulation.push_back(child2);
@@ -103,18 +110,37 @@ void CGAOptimizer::runIteration() {
 
     CMax3SatProblem cMax3SatProblem(filename);
 
-    cout << species.size() << " AAAAAAAAAA";
-
-
     for (int i = 0; i < species.size(); ++i) {
-        species.at(i).fitnes = cMax3SatProblem.calculateQuality(species.at(i), columns);
+        species.at(i).fitnes = cMax3SatProblem.calculateQuality(species.at(i), columns, fileValue);
     }
 
 
 }
 
-void CGAOptimizer::printPopulation(){
-    for (auto & specie : species) {
+void CGAOptimizer::runIterationMultiple(int fileValue, int quantity) {
+    for (int i = 0; i < quantity; ++i) {
+        runIteration(fileValue);
+    }
+}
+
+int CGAOptimizer::findHighestSolution() {
+    int solution = 0;
+    vector<bool> sol;
+    for (int i = 0; i < species.size(); ++i) {
+        if (species.at(i).fitnes > solution)
+            solution = species.at(i).fitnes;
+            sol = species.at(i).solution;
+    }
+    cout << solution<< " ";
+    for (int i = 0; i < sol.size(); ++i) {
+        cout << sol.at(i);
+    }
+    return solution;
+}
+
+
+void CGAOptimizer::printPopulation() {
+    for (auto &specie: species) {
         cout << specie.fitnes << "\n";
     }
 }

@@ -23,18 +23,15 @@ public:
 
     CGAIndividual(const vector<bool> solution);
 
-    CGAIndividual();
+    CGAIndividual(int fileValue);
 
-    CGAIndividual(CGAIndividual mum, CGAIndividual dad);
+    CGAIndividual(CGAIndividual mum, CGAIndividual dad, int fileValue, int chanceOfCrossover);
 
 
-    void crossOver(CGAIndividual partner);
-
-    void mutate();
+    void mutate(int fileValue);
 
     int fitness();
 
-    vector<bool> assignRandomSolution();
 
 private:
 

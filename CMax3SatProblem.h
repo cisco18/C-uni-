@@ -26,7 +26,7 @@ public:
 
     bool twoDimensionalTableDealocate(string **table2d, int rows, int columns);
 
-    int calculateQuality(CGAIndividual dude, int columns);
+    int calculateQuality(CGAIndividual dude, int columns, int fileValue);
 
     vector<bool> solution;
 private:
